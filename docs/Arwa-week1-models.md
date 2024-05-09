@@ -4,9 +4,12 @@ The model uses the Zero 1-to-3 framework to generate 3d models based on a single
 
 ## Attributes
 
-**Pre-trained Model:** Zero123 **Fine Tuning:** Available
+**Pre-trained Model:** Zero123
+
+**Fine Tuning:** Available
 
 **Dataset:[ NeRF](https://paperswithcode.com/dataset/nerf)**, [Mip-NeRF 360](https://paperswithcode.com/dataset/mip-nerf-360), [T$^3$Bench ](https://paperswithcode.com/dataset/t-3-bench)
+
 **Evaluation:** Available: R-precision evaluation
 
 **Output extensions**: obj
@@ -30,11 +33,19 @@ Instant3D proposes a diagram that predicts 3D shapes via an enhanced LRM with mu
 
 ## Attributes
 
-**Pre-trained Model:** LRM Base, LRM Large, nerf base, nerf Large **Fine Tuning:** Available (Zero123 only)
+**Pre-trained Model:** LRM Base, LRM Large, nerf base, nerf Large 
+
+**Fine Tuning:** Available (Zero123 only)
 
 **Dataset:[ OmniObject3D](https://paperswithcode.com/dataset/omniobject3d)**, [Objaverse](https://paperswithcode.com/dataset/objaverse)
 
-**Evaluation:** Not available **Output extensions:** obj **Open source:** Yes **Texture map**: available
+**Evaluation:** Not available 
+
+**Output extensions:** obj 
+
+**Open source:** Yes 
+
+**Texture map**: available
 
 
 ## Trials:
@@ -59,9 +70,15 @@ The subsequent image-to-triplane decoder transforms the latent vectors onto the 
 
 ## Attributes
 
-**Pre-trained Model:** Implemented LRM model **Dataset:[ OmniObject3D](https://paperswithcode.com/dataset/omniobject3d)**, [Objaverse](https://paperswithcode.com/dataset/objaverse)
+**Pre-trained Model:** Implemented LRM model 
 
-**Evaluation:** Not available **Output extensions:** obj, glb **Open source:** Yes
+**Dataset:[ OmniObject3D](https://paperswithcode.com/dataset/omniobject3d)**, [Objaverse](https://paperswithcode.com/dataset/objaverse)
+
+**Evaluation:** Not available 
+
+**Output extensions:** obj, glb 
+
+**Open source:** Yes
 
 **Texture map**: available
 
