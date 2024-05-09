@@ -6,7 +6,8 @@ The model uses the Zero 1-to-3 framework to generate 3d models based on a single
 
 **Pre-trained Model:** Zero123 **Fine Tuning:** Available
 
-**Dataset:[ NeRF](https://paperswithcode.com/dataset/nerf)**, [Mip-NeRF 360](https://paperswithcode.com/dataset/mip-nerf-360), [T$^3$Bench ](https://paperswithcode.com/dataset/t-3-bench)**Evaluation:** Available: R-precision evaluation
+**Dataset:[ NeRF](https://paperswithcode.com/dataset/nerf)**, [Mip-NeRF 360](https://paperswithcode.com/dataset/mip-nerf-360), [T$^3$Bench ](https://paperswithcode.com/dataset/t-3-bench)
+**Evaluation:** Available: R-precision evaluation
 
 **Output extensions**: obj
 
@@ -68,4 +69,4 @@ The subsequent image-to-triplane decoder transforms the latent vectors onto the 
 
 30-45 seconds each
 
-![](imgs/Aspose.Words.12e9945b-adfd-4fe7-97f8-d2770063434b.004.png)** ![](imgs/Aspose.Words.12e9945b-adfd-4fe7-97f8-d2770063434b.005.png)![](imgs/Aspose.Words.12e9945b-adfd-4fe7-97f8-d2770063434b.006.png)
+![](imgs/Aspose.Words.12e9945b-adfd-4fe7-97f8-d2770063434b.004.png) ![](imgs/Aspose.Words.12e9945b-adfd-4fe7-97f8-d2770063434b.005.png)![](imgs/Aspose.Words.12e9945b-adfd-4fe7-97f8-d2770063434b.006.png)
