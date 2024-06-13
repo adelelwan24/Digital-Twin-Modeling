@@ -21,6 +21,22 @@ Copyright (C) 2022 Daniel Westberg
 
 
 def create_blender_project(data_paths):
+    #### Initializations 
+    data_folder = const.BASE_PATH
+    target_folder = const.TARGET_PATH
+    blender_install_path = config.get_default_blender_installation_path()
+    program_path = os.path.dirname(os.path.realpath(__file__))
+    blender_script_path = const.BLENDER_SCRIPT_PATH
+
+
+    # Detect where/if blender is installed on pc
+    auto_blender_install_path = (
+        IO.blender_installed()
+    )  # TODO: add this to system.config!
+
+    if auto_blender_install_path is not None:
+        blender_install_path = auto_blender_install_path
+
     if not os.path.exists("." + target_folder):
         os.makedirs("." + target_folder)
 
@@ -64,6 +80,43 @@ def create_blender_project(data_paths):
         print("Object created at:" + program_path + target_base + outformat)
 
     print("Project created at: " + program_path + target_path)
+
+
+def FloorplanToBlenderRunner(image_path : str) -> None:
+    """
+    Do not change variables in this file but rather in ./config.ini or ./FloorplanToBlenderLib/const.py
+    """
+
+    data_folder = const.BASE_PATH
+    data_paths = list()
+
+
+    config_path = "./Configs/default.ini"
+    fplan = floorplan.new_floorplan(config_path)
+
+    if image_path:
+        fplan.image_path = image_path
+    
+    print("Generate datafiles in folder: Data")
+    print("")
+    print("Clean datafiles")
+
+    IO.clean_data_folder(data_folder)
+
+    data_paths = [execution.simple_single(fplan)]
+
+    print("")
+    print("Creates blender project")
+    print("")
+
+    if isinstance(data_paths[0], list):
+        for paths in data_paths:
+            create_blender_project(paths)
+    else:
+        create_blender_project(data_paths)
+
+    print("")
+    print("Done, Have a nice day!")
 
 
 if __name__ == "__main__":
