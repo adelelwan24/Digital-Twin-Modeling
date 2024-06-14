@@ -1,0 +1,13 @@
+opencv-python
+numpy
+configparser
+future-fstrings
+requests
+pyfiglet
+setuptools
+scipy
+pillow
+matplotlib
+black
+pytest
+flask
