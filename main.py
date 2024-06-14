@@ -20,9 +20,8 @@ Copyright (C) 2022 Daniel Westberg
 """
 
 
-def create_blender_project(data_paths):
+def create_blender_project(data_paths) -> str:
     #### Initializations 
-    data_folder = const.BASE_PATH
     target_folder = const.TARGET_PATH
     blender_install_path = config.get_default_blender_installation_path()
     program_path = os.path.dirname(os.path.realpath(__file__))
@@ -74,15 +73,22 @@ def create_blender_project(data_paths):
                 "./Blender/blender_export_any.py",
                 "." + target_path,
                 outformat,
-                target_base + outformat,
+                "." + target_base + outformat,
             ]
         )
-        print("Object created at:" + program_path + target_base + outformat)
+        if outformat == '.gltf':
+            outformat = '.glb'
+        result_path = program_path + target_base + outformat
+        print("Object created at:" + result_path)
+        return result_path
+    
+    result_path =  program_path + target_path
+    print("Project created at: " + result_path)
 
-    print("Project created at: " + program_path + target_path)
+    return result_path
 
 
-def FloorplanToBlenderRunner(image_path : str) -> None:
+def FloorplanToBlenderRunner(image_path : str) -> str:
     """
     Do not change variables in this file but rather in ./config.ini or ./FloorplanToBlenderLib/const.py
     """
@@ -111,9 +117,9 @@ def FloorplanToBlenderRunner(image_path : str) -> None:
 
     if isinstance(data_paths[0], list):
         for paths in data_paths:
-            create_blender_project(paths)
+            return create_blender_project(paths)
     else:
-        create_blender_project(data_paths)
+        return create_blender_project(data_paths)
 
     print("")
     print("Done, Have a nice day!")
