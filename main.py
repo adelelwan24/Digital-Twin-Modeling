@@ -20,7 +20,7 @@ Copyright (C) 2022 Daniel Westberg
 """
 
 
-def create_blender_project(data_paths) -> str:
+def create_blender_project(data_paths, target_name =const.TARGET_NAME) -> str:
     #### Initializations 
     target_folder = const.TARGET_PATH
     blender_install_path = config.get_default_blender_installation_path()
@@ -39,7 +39,7 @@ def create_blender_project(data_paths) -> str:
     if not os.path.exists("." + target_folder):
         os.makedirs("." + target_folder)
 
-    target_base = target_folder + const.TARGET_NAME
+    target_base = target_folder + target_name
     target_path = target_base + const.BASE_FORMAT
     target_path = (
         IO.get_next_target_base_name(target_base, target_path) + const.BASE_FORMAT
@@ -88,7 +88,7 @@ def create_blender_project(data_paths) -> str:
     return result_path
 
 
-def FloorplanToBlenderRunner(image_path : str) -> str:
+def FloorplanToBlenderRunner(image_path : str, target_name : str = const.TARGET_NAME) -> str:
     """
     Do not change variables in this file but rather in ./config.ini or ./FloorplanToBlenderLib/const.py
     """
@@ -117,9 +117,9 @@ def FloorplanToBlenderRunner(image_path : str) -> str:
 
     if isinstance(data_paths[0], list):
         for paths in data_paths:
-            return create_blender_project(paths)
+            return create_blender_project(paths, target_name)
     else:
-        return create_blender_project(data_paths)
+        return create_blender_project(data_paths, target_name)
 
     print("")
     print("Done, Have a nice day!")
