@@ -18,10 +18,10 @@
 	<body>
 
 		<div id="info">
-			<a href="https://threejs.org" target="_blank" rel="noopener">three.js</a> webgl - drag dragControls<br />
-			Use "Shift+Click" to add/remove objects to/from a group.<br />
+			<a href="/viewer" target="_blank" rel="noopener">Viewer</a> - 
+			<a href="/" target="_blank" rel="noopener">Home</a> - 
+			<a href="/models" target="_blank" rel="noopener">Model</a> <br />
 			Use "M" to toggle between rotate and translate mode.<br />
-			Grouped objects can be transformed as a union.
 		</div>
 
         <script type="importmap">
@@ -40,10 +40,9 @@
 			import { DragControls } from 'three/addons/controls/DragControls.js';
 			import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 			import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
-			import { GLTFExporter } from 'three/addons/exporters/GLTFExporter.js';
 			import { GUI } from 'three/addons/libs/lil-gui.module.min.js';
 
-
+			import {exportGLTF} from '/js/exporter.js'
 
 			let container;
 			let camera, scene, renderer, amplight, gridHelper;
@@ -55,8 +54,8 @@
 			const params = {
                 grids : true,
                 lColor : 0xffffff,
-                // bColor : 0x000000,
-                bColor : 0xc3c1c1,
+                bColor : 0x4f5f63,
+                // bColor : 0xc3c1c1,
                 fScale : 1,
 				oScale : 2,
 				Reset : function() { 
@@ -66,6 +65,15 @@
 					floorplan.rotation.set(0, 0, 0)
 					camera.position.set( - 10, 6.8, 0 )
 				},
+				trs: false,
+				onlyVisible: true,
+				binary: false,
+				maxTextureSize: 4096,
+				title : 'scene',
+				Export : exportScene,
+				ExportModels : exportObjects,
+				ExportFloorplan : exportFloorplan,
+				ExportObject : exportObject,
             }
 
 			const mouse = new THREE.Vector2(), raycaster = new THREE.Raycaster();
@@ -84,8 +92,6 @@
 				scene.add(amplight); 
 				
 				camera = new THREE.PerspectiveCamera( 70, window.innerWidth / window.innerHeight, 0.1, 500 );
-				// camera.position.z = 25;
-				// camera.position.set(0, 25, 25);
 				camera.position.set( - 10, 6.8, 0 )
 
 				gridHelper = new THREE.GridHelper( 50, 50,) // 0x0000ff, 0x808080 );
@@ -106,9 +112,8 @@
 
 				const loader = new GLTFLoader();
 
-                loader.load( "{{ url_for('static', filename='/models/final_object.glb')}}", function ( gltf ) {
-					// loader.load( "{{ url_for('static', filename='/models/modelsfloorplan.glb')}}", function ( gltf ) {
-						// loader.load( '/models/{{ model_name }}',  function ( gltf ) {
+                loader.load( "{{ url_for('static', filename='/models/floorplan/final_object.glb')}}", function ( gltf ) {
+						// loader.load( '/models/floorplan/{{ model_name }}',  function ( gltf ) {
 								floorplan = gltf.scene;
 								floorplan.name = 'floorplan'
 								console.log(floorplan)
@@ -125,17 +130,15 @@
                     console.log( Math.round( xhr.loaded / xhr.total * 100 ) + '% loaded' );
                 });
 
-				loader.load( "{{ url_for('static', filename='/models/glTF/DamagedHelmet.gltf')}}", function ( gltf ) {
+				loader.load( "{{ url_for('static', filename='/models/objects/glTF/DamagedHelmet.gltf')}}", function ( gltf ) {
 					// loader.load( '/models/{{ model_name }}',  function ( gltf ) {
-						// loader.load( 'floorplan.glb', async function ( gltf ) {
-							model = gltf.scene;
-							model.name = 'object'
-							model.castShadow = true;
-							model.receiveShadow = true;
-							scene.add( model );
-							groups.push(model)
-				render();
-        
+					model = gltf.scene;
+					model.name = 'object'
+					model.castShadow = true;
+					model.receiveShadow = true;
+					scene.add( model );
+					groups.push(model)
+					render();
                 },
                 // called while loading is progressing
                 function ( xhr ) {
@@ -191,12 +194,44 @@
 				gScene.add( params, 'grids' ).name( 'Use Grid Helper' )
 				gScene.addColor( params, 'lColor' ).name( 'Light Color' )
 				gScene.addColor( params, 'bColor' ).name( 'Background Color' )
-								
-				gui.add( params, 'fScale', .5, 3, .01).name( "Floorplan Scale")
-				gui.add( params, 'oScale', .5, 7, .01).name( "Object Scale")
-				gui.add( params, 'Reset')
+
+				let t = gui.addFolder('Transformations')				
+				t.add( params, 'fScale', .5, 3, .01).name( "Floorplan Scale")
+				t.add( params, 'oScale', .5, 7, .01).name( "Object Scale")
+				t.add( params, 'Reset')
+				t.close()
+				
+				let h = gui.addFolder( 'Export Settings' );
+				h.add( params, 'trs' ).name( 'Use TRS' );
+				h.add( params, 'onlyVisible' ).name( 'Only Visible Objects' );
+				h.add( params, 'binary' ).name( 'Binary (GLB)' );
+				h.add( params, 'maxTextureSize', 2, 8192 ).name( 'Max Texture Size' ).step( 1 );
+				h.add( params, 'title' ).name( 'Title');
+				h.close()
+
+				let e = gui.addFolder( 'Export' );
+				e.add( params, 'Export').name('Export Scene')
+				e.add( params, 'ExportModels' ).name( 'Export Models' );
+				e.add( params, 'ExportFloorplan' ).name( 'Export Floorplan' );
+				e.add( params, 'ExportObject' ).name( 'Export Object' );
+				e.close()
+
+				// gui.close();
 			}
 			// ################################ <=========> #############################
+			function exportScene() {
+				exportGLTF( scene , params);
+			}
+			function exportObjects() {
+				exportGLTF( [floorplan, model], params );
+			}
+			function exportFloorplan() {
+				exportGLTF( floorplan , params);
+			}
+			function exportObject() {
+				exportGLTF( model , params);
+			}
+
 			function enableOrbit() {
 				orbitControls.enabled = true;
 			}
