@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<title>GLTF Viewer</title>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+		<link type="text/css" rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
+	</head>
+
+	<body>
+		<div id="info">
+			<a href="/editor" target="_blank" rel="noopener">Editor</a> - 
+			<a href="/" target="_blank" rel="noopener">Home</a> - 
+			<a href="/models" target="_blank" rel="noopener">Model</a>
+            <br />
+		</div>
+
+		<script type="importmap">
+            {
+              "imports": {
+                "three": "https://cdn.jsdelivr.net/npm/three@v0.166.1/build/three.module.js",
+                "three/addons/": "https://cdn.jsdelivr.net/npm/three@v0.166.1/examples/jsm/"
+              }
+            }
+          </script>
+
+        <script type="module">
+
+        </script>
+
+		<script type="module">
+			import * as THREE from 'three';
+
+			import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+			import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+			import { RGBELoader } from 'three/addons/loaders/RGBELoader.js';
+            import { GUI } from 'three/addons/libs/lil-gui.module.min.js';
+
+            import {exportGLTF} from '/js/exporter.js'
+
+			let camera, scene, renderer, gridHelper, bg, light, model;
+          
+
+            const params = {
+                grids : true,
+                lColor : 0xffffff,
+                bColor : 0x4f5f63,
+                // bColor : 0xc3c1c1,
+                scale : 1,
+                trs: false,
+				onlyVisible: true,
+				binary: false,
+				maxTextureSize: 4096,
+				title : 'scene',
+                ExportObject : exportObject,
+            }
+
+            function exportObject() {
+				exportGLTF( model, params);
+			}
+
+			function init() {
+
+				const container = document.createElement( 'div' );
+				document.body.appendChild( container );
+
+				camera = new THREE.PerspectiveCamera( 65, window.innerWidth / window.innerHeight, 0.25, 1000 );
+				// camera.position.set( - 1.8, 6, 10 );
+                camera.position.set( - 10, 6.8, 0 )
+
+				scene = new THREE.Scene();
+
+                scene.background = new THREE.Color( 0xf0f0f0 );
+
+                // scene.add( new THREE.AmbientLight( 0xaaaaaa ) );
+                light = new THREE.AmbientLight( 0xffffff );
+                scene.add(light) 
+
+                const shadow = new THREE.DirectionalLight(0xffffff, .5)
+                shadow.castShadow = true;
+                shadow.position.set(-30, 50, 0)
+                scene.add(shadow)
+
+                gridHelper = new THREE.GridHelper( 50, 50,) // 0x0000ff, 0x808080 );
+				scene.add( gridHelper );
+
+                // #### GUI Section ####
+		    	const gui = new GUI();
+                gui.add( params, 'scale', .1, 5, .1).name( "Scale")
+                
+                const gScene = gui.addFolder('Visuals')
+				gScene.add( params, 'grids' ).name( 'Use Grid Helper' )
+				gScene.addColor( params, 'lColor' ).name( 'Light Color' )
+				gScene.addColor( params, 'bColor' ).name( 'Background Color' )
+                gScene.close()
+
+                let h = gui.addFolder( 'Export Settings' );
+				h.add( params, 'trs' ).name( 'Use TRS' );
+				h.add( params, 'onlyVisible' ).name( 'Only Visible Objects' );
+				h.add( params, 'binary' ).name( 'Binary (GLB)' );
+				h.add( params, 'maxTextureSize', 2, 8192 ).name( 'Max Texture Size' ).step( 1 );
+				h.add( params, 'title' ).name( 'Title');
+				h.close()
+
+                gui.add( params, 'ExportObject' ).name( 'Export' );
+
+
+                // ##################### GLTFLoader #############################
+				const loader = new GLTFLoader();
+                // loader.load( '/models/floorplan/final_object.glb', function ( gltf ) {
+                loader.load( '/models/floorplan/{{ model_name }}',  function ( gltf ) {
+                // loader.load( 'floorplan.glb', async function ( gltf ) {
+                    model = gltf.scene;
+                    // await renderer.compileAsync( model, camera, scene );
+                    model.castShadow = true;
+                    scene.add( model );
+                    render();
+        
+                },
+                // called while loading is progressing
+                function ( xhr ) {
+
+                    console.log( Math.round( xhr.loaded / xhr.total * 100 ) + '% loaded' );
+
+                },
+                // called when loading has errors
+                function ( error ) {
+
+                    console.log( 'An error happened' );
+                    console.log( error)
+
+                } );
+
+				renderer = new THREE.WebGLRenderer( { antialias: true } );
+				renderer.setPixelRatio( window.devicePixelRatio );
+				renderer.setSize( window.innerWidth, window.innerHeight );
+				renderer.toneMapping = THREE.ACESFilmicToneMapping;
+				renderer.toneMappingExposure = 1;
+
+                renderer.shadowMap.enabled = true;
+				container.appendChild( renderer.domElement );
+
+                renderer.setAnimationLoop(render)
+
+				const controls = new OrbitControls( camera, renderer.domElement );
+				controls.addEventListener( 'change', render ); // use if there is no animation loop
+				controls.minDistance = 2;
+				controls.maxDistance = 100;
+				controls.target.set( 0, 0, - 0.2 );
+				controls.update();
+
+				window.addEventListener( 'resize', onWindowResize );
+
+			}
+
+			function onWindowResize() {
+
+				camera.aspect = window.innerWidth / window.innerHeight;
+				camera.updateProjectionMatrix();
+
+				renderer.setSize( window.innerWidth, window.innerHeight );
+
+				render();
+
+			}
+
+			function render() {
+
+                gridHelper.traverse ( function (child) {
+                        child.visible = params.grids;
+                    })
+                scene.background = new THREE.Color( params.bColor)
+                light.color = new THREE.Color(params.lColor)
+                if (model) {
+                    model.scale.setScalar(params.scale)
+                }
+				renderer.render( scene, camera );
+
+			}
+
+            // function toggle_grid (grids){
+            // } 
+
+            init();
+
+		</script>
+
+	</body>
+</html>
