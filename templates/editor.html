@@ -1,27 +1,20 @@
 <!DOCTYPE html>
 <html lang="en">
 	<head>
-		<title>three.js webgl - drag dragControls</title>
+		<title>Editor - 3DArchitect</title>
 		<meta charset="utf-8">
 		<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
 		<link type="text/css" rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
-		<style>
-			body {
-				background-color: #f0f0f0;
-				color: #444;
-			}
-			a {
-				color: #08f;
-			}
-		</style>
 	</head>
 	<body>
 
 		<div id="info">
 			<a href="/viewer" target="_blank" rel="noopener">Viewer</a> - 
 			<a href="/" target="_blank" rel="noopener">Home</a> - 
-			<a href="/models" target="_blank" rel="noopener">Model</a> <br />
-			Use "M" to toggle between rotate and translate mode.<br />
+			<a href="/models" target="_blank" rel="noopener">Models</a> <br />
+			<p>
+				Use "M" to toggle between rotate and translate mode.<br />
+			</p>
 		</div>
 
         <script type="importmap">
@@ -112,38 +105,40 @@
 
 				const loader = new GLTFLoader();
 
-                loader.load( "{{ url_for('static', filename='/models/floorplan/final_object.glb')}}", function ( gltf ) {
-						// loader.load( '/models/floorplan/{{ model_name }}',  function ( gltf ) {
-								floorplan = gltf.scene;
-								floorplan.name = 'floorplan'
-								console.log(floorplan)
-								floorplan.castShadow = true;
-								floorplan.receiveShadow = true;
-								// floorplan.position.set(10, 10, 10)
-								scene.add( floorplan );
-								groups.push(floorplan)
-                    render();
-        
-                },
-                // called while loading is progressing
-                function ( xhr ) {
-                    console.log( Math.round( xhr.loaded / xhr.total * 100 ) + '% loaded' );
-                });
+				{% if floorplan %}
+					loader.load( '/models/floorplans/{{ floorplan }}',  function ( gltf ) {
+							floorplan = gltf.scene;
+							floorplan.name = 'floorplan'
+							console.log(floorplan)
+							floorplan.castShadow = true;
+							floorplan.receiveShadow = true;
+							scene.add( floorplan );
+							groups.push(floorplan)
+							render();
+				
+						},
+						// called while loading is progressing
+						function ( xhr ) {
+							console.log( Math.round( xhr.loaded / xhr.total * 100 ) + '% loaded' );
+						});
 
-				loader.load( "{{ url_for('static', filename='/models/objects/glTF/DamagedHelmet.gltf')}}", function ( gltf ) {
-					// loader.load( '/models/{{ model_name }}',  function ( gltf ) {
-					model = gltf.scene;
-					model.name = 'object'
-					model.castShadow = true;
-					model.receiveShadow = true;
-					scene.add( model );
-					groups.push(model)
-					render();
-                },
-                // called while loading is progressing
-                function ( xhr ) {
-                    console.log( Math.round( xhr.loaded / xhr.total * 100 ) + '% loaded' );
-                });
+				{% endif %}
+
+				{% if obj %}
+						loader.load( '/models/objects/{{ obj }}',  function ( gltf ) {
+						model = gltf.scene;
+						model.name = 'object'
+						model.castShadow = true;
+						model.receiveShadow = true;
+						scene.add( model );
+						groups.push(model)
+						render();
+					},
+					// called while loading is progressing
+					function ( xhr ) {
+						console.log( Math.round( xhr.loaded / xhr.total * 100 ) + '% loaded' );
+					});
+				{% endif %}
 
 				renderer = new THREE.WebGLRenderer( { antialias: true } );
 				renderer.setPixelRatio( window.devicePixelRatio );

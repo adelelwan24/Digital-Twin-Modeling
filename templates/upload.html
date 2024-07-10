@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+
+{% block title %}Upload Floorplan Image{% endblock %}
+
+{% block content %}
+<h2 class="mt-5 text-center">Upload a Floorplan Image</h2>
+<div class="d-flex justify-content-center mt-4">
+    <form action="/" method="post" enctype="multipart/form-data" class="form-container">
+        <div class="form-group">
+            <label for="floorplan">Upload Floorplan Image</label>
+            <div class="input-group">
+                <div class="custom-file">
+                    <input type="file" class="custom-file-input" id="file" name="file" 
+                        accept=".png, .jpg, .jpeg" onchange="updateFileName('file')">
+                    <label class="custom-file-label" for="floorplan">Choose file</label>
+                </div>
+            </div>
+        </div>
+
+        <button type="submit" class="btn btn-primary btn-block">Upload Files</button>
+    </form>
+</div>
+
+<script>
+    function updateFileName(inputId) {
+        var input = document.getElementById(inputId);
+        var label = input.nextElementSibling;
+        var fileName = input.files[0].name;
+        label.textContent = fileName;
+    }
+    window.onload = function() {
+        updateFileName('file');
+    };
+</script>
+
+{% endblock %}
+
+

@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 	<head>
-		<title>GLTF Viewer</title>
+		<title>GLTF Viewer - 3DArchitect</title>
 		<meta charset="utf-8">
 		<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
 		<link type="text/css" rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
@@ -11,7 +11,7 @@
 		<div id="info">
 			<a href="/editor" target="_blank" rel="noopener">Editor</a> - 
 			<a href="/" target="_blank" rel="noopener">Home</a> - 
-			<a href="/models" target="_blank" rel="noopener">Model</a>
+			<a href="/models" target="_blank" rel="noopener">Models</a>
             <br />
 		</div>
 
@@ -23,10 +23,6 @@
               }
             }
           </script>
-
-        <script type="module">
-
-        </script>
 
 		<script type="module">
 			import * as THREE from 'three';
@@ -108,7 +104,7 @@
                 // ##################### GLTFLoader #############################
 				const loader = new GLTFLoader();
                 // loader.load( '/models/floorplan/final_object.glb', function ( gltf ) {
-                loader.load( '/models/floorplan/{{ model_name }}',  function ( gltf ) {
+                loader.load( '/models/{{ obj_type }}/{{ model_name }}',  function ( gltf ) {
                 // loader.load( 'floorplan.glb', async function ( gltf ) {
                     model = gltf.scene;
                     // await renderer.compileAsync( model, camera, scene );

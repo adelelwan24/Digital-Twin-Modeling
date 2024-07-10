@@ -1,4 +1,4 @@
-/* static/styles.css */
+/* static/styles.css
 body {
     font-family: Arial, sans-serif;
     background: #f4f4f9;
@@ -59,4 +59,56 @@ button:hover {
 
 .button:hover {
     background: #45a049;
+} */
+
+/* body {
+    background-color: #f8f9fa;
+    color: #444;
+} */
+body {
+    background-color: #f0f0f0;
+    color: #444;
+}
+p {
+    color: #08f;
+}
+.model-section {
+    margin: 20px 0;
+}
+.model-section h2 {
+    margin-bottom: 20px;
+}
+.model-list {
+    list-style-type: none;
+    padding: 0;
+}
+.model-list li {
+    padding: 10px;
+    background-color: #fff;
+    border: 1px solid #e0e0e0;
+    border-radius: 5px;
+    margin-bottom: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+.upload-section {
+    max-width: 500px;
+    margin: 50px auto;
+    padding: 20px;
+    background-color: #ffffff;
+    border: 1px solid #e0e0e0;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+.upload-section h1 {
+    margin-bottom: 20px;
+}
+.upload-section .form-group {
+    margin-bottom: 20px;
+}
+
+.content {
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
 }
