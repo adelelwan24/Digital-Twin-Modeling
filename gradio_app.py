@@ -1,7 +1,7 @@
 import gradio as gr
 import os
 
-from main import FloorplanToBlenderRunner
+from floorplan import FloorplanToBlenderRunner
 
 demo = gr.Interface(
     fn=FloorplanToBlenderRunner,
