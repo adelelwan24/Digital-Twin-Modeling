@@ -1,7 +1,7 @@
 from flask import Flask, render_template, request, redirect, jsonify, url_for
 import os
 from werkzeug.utils import secure_filename
-from main import FloorplanToBlenderRunner 
+from floorplan import FloorplanToBlenderRunner 
 
 app = Flask(__name__, static_url_path='')
 
@@ -19,11 +19,15 @@ def allowed_file(filename:str, extensions:list)  -> bool:
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in extensions
 
     
-@app.route('/', methods=['GET', 'POST'])
+@app.route('/')
+def home():
+    return render_template('home.html')
+
+@app.route('/floorplan', methods=['GET', 'POST'])
 def upload_file():
     if request.method == 'POST':
-        file = request.files['file']
-        print(type(file))
+        file = request.files.get('file')
+
         #### Validate File Constrains
         if file and file.filename and allowed_file(file.filename, ALLOWED_IMG_EXTENSIONS):
             filename = secure_filename(file.filename)
@@ -45,9 +49,6 @@ def upload_file():
             return redirect(request.url)
     return render_template('upload.html')
 
-@app.route('/home')
-def home():
-    return render_template('home.html')
 
 @app.route('/editor', methods=['GET', 'POST'])
 def editor():
@@ -73,41 +74,15 @@ def editor():
             return render_template('editor_uploader.html')
             return redirect(url_for('editor'))
         
-        print(f'Floorplan: {floorplan}\nObject: {obj}')
         return redirect(url_for('editor', floorplan=floor_filename, obj=obj_filename)) 
     else:
-        # return render_template('editor_uploader.html')
         floorplan = request.args.get('floorplan')
         obj = request.args.get('obj')
 
         if not (obj or floorplan):
-            print(f'Floorplan: {floorplan}\nObject: {obj}')
             return render_template('editor_uploader.html')
-        print(f'Floorplan: {floorplan}\nObject: {obj}')
+
         return render_template('editor.html', floorplan=floorplan, obj=obj)
-
-@app.route('/editor_uploader', methods=['GET', 'POST'])
-def editor_uploader():
-    if request.method == 'POST':
-        floorplan = request.files.get('floorplan')
-        obj = request.files.get('object')
-
-        floor_filename = ''
-        obj_filename = ''
-        #### Validate File Constrains
-        if floorplan and floorplan.filename and allowed_file(floorplan.filename, ALLOWED_OBJ_EXTENSIONS):
-            floor_filename = secure_filename(floorplan.filename)
-            floor_path = os.path.join(app.static_folder, 'models', FLOORPLANS_FOLDER, floor_filename)
-            floorplan.save(floor_path)
-
-        if obj and obj.filename and allowed_file(obj.filename, ALLOWED_OBJ_EXTENSIONS):
-            obj_filename = secure_filename(obj.filename)
-            obj_path = os.path.join(app.static_folder, 'models', OBJECTS_FOLDER, obj_filename)
-            obj.save(obj_path)
-        
-        return redirect(url_for('editor', floorplan=floor_filename, obj=obj_filename)) 
-    else:
-        return render_template('editor_uploader.html')
 
 @app.route('/viewer/<obj_type>/<model_name>')
 def viewer(obj_type, model_name):
