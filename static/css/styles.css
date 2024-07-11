@@ -1,114 +1,29 @@
-/* static/styles.css
-body {
+
+/* body {
+    background-color: #f0f0f0;
+    color: #444;
+
     font-family: Arial, sans-serif;
-    background: #f4f4f9;
     margin: 0;
     padding: 0;
     display: flex;
     justify-content: center;
     align-items: center;
     height: 100vh;
-}
-
-.container {
-    background: white;
-    padding: 20px;
-    border-radius: 8px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-}
-
-.upload-form {
-    display: flex;
-    flex-direction: column;
-}
-
-input[type="file"] {
-    margin-bottom: 10px;
-}
-
-button {
-    cursor: pointer;
-    background: #007bff;
-    color: white;
-    border: none;
-    padding: 10px;
-    border-radius: 5px;
-}
-button:hover {
-    background: #0056b3;
-}
-
-.celebration img {
-    width: 100%;
-    max-width: 320px;
-    display: block;
-    margin: 20px auto;
-}
-
-.button {
-    display: inline-block;
-    background: #4CAF50;
-    color: white;
-    padding: 10px 20px;
-    text-align: center;
-    border-radius: 5px;
-    text-decoration: none;
-    font-size: 16px;
-    margin-top: 20px;
-}
-
-.button:hover {
-    background: #45a049;
-} */
-
-/* body {
-    background-color: #f8f9fa;
-    color: #444;
 } */
 body {
-    background-color: #f0f0f0;
-    color: #444;
+    background-color: #f8f9fa;
+    color: #1c1e22;
+    /* font-family: 'Roboto', sans-serif; */
 }
 p {
     color: #08f;
 }
-.model-section {
-    margin: 20px 0;
-}
-.model-section h2 {
-    margin-bottom: 20px;
-}
-.model-list {
-    list-style-type: none;
-    padding: 0;
-}
-.model-list li {
-    padding: 10px;
-    background-color: #fff;
-    border: 1px solid #e0e0e0;
-    border-radius: 5px;
-    margin-bottom: 10px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-}
-.upload-section {
-    max-width: 500px;
-    margin: 50px auto;
-    padding: 20px;
-    background-color: #ffffff;
-    border: 1px solid #e0e0e0;
-    border-radius: 10px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-}
-.upload-section h1 {
-    margin-bottom: 20px;
-}
-.upload-section .form-group {
-    margin-bottom: 20px;
-}
 
-.content {
-    background: white;
-    padding: 20px;
-    border-radius: 8px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+.footer {
+    /* position: fixed; */
+    bottom: 0;
+    width: 100%;
+    background-color: #f8f9fa;
+    border-top: 1px solid #e9ecef;
 }

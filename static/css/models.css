@@ -1,0 +1,27 @@
+.model-section {
+    margin: 20px 0;
+}
+.model-section h2 {
+    margin-bottom: 20px;
+}
+.model-list {
+    list-style-type: none;
+    padding: 0;
+}
+.model-list li {
+    padding: 10px;
+    background-color: #fff;
+    border: 1px solid #e0e0e0;
+    border-radius: 5px;
+    margin-bottom: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+
+.content {
+    background: white;
+    padding: 10px;
+    margin-bottom: 40px;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
