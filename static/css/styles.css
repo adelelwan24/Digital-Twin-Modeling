@@ -1,0 +1,29 @@
+
+/* body {
+    background-color: #f0f0f0;
+    color: #444;
+
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+} */
+body {
+    background-color: #f8f9fa;
+    color: #1c1e22;
+    /* font-family: 'Roboto', sans-serif; */
+}
+p {
+    color: #08f;
+}
+
+.footer {
+    /* position: fixed; */
+    bottom: 0;
+    width: 100%;
+    background-color: #f8f9fa;
+    border-top: 1px solid #e9ecef;
+}

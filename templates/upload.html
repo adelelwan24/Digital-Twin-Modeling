@@ -1,0 +1,73 @@
+{% extends "base.html" %}
+
+{% block title %}Upload Floorplan Image{% endblock %}
+
+{% block content %}
+<link href="css\upload.css" rel="stylesheet">
+
+<h2 class="mt-5 text-center">Upload a Floorplan Image</h2>
+
+<div class="d-flex justify-content-center mt-4">
+    <form action="/floorplan" method="post" enctype="multipart/form-data" class="form-container">
+        <div class="form-group">
+            <label for="floorplan" class="text-dark">Upload Floorplan Image</label>
+            <div class="drag-drop" id="floorplan-drop">
+                Drag & Drop Floorplan Here
+                <div class="custom-file">
+                    <input type="file" class="custom-file-input" id="file" name="file" 
+                        accept=".png, .jpg, .jpeg" onchange="updateFileName('file')">
+                    <label class="custom-file-label" for="floorplan">Choose file</label>
+                </div>
+            </div>
+        </div>
+
+        <button type="submit" class="btn btn-primary btn-block">Upload Files</button>
+    </form>
+</div>
+
+<script>
+    function updateFileName(inputId) {
+        var input = document.getElementById(inputId);
+        var label = input.nextElementSibling;
+        if (input.files.length > 0) {
+            var fileName = input.files[0].name;
+            label.textContent = fileName;
+        }
+    }
+    
+    window.onload = function() {
+        updateFileName('file');
+    };
+
+    function handleDragOver(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        e.target.classList.add('dragover');
+    }
+
+    function handleDragLeave(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        e.target.classList.remove('dragover');
+    }
+
+    function handleDrop(e, inputId) {
+        e.preventDefault();
+        e.stopPropagation();
+        e.target.classList.remove('dragover');
+
+        var input = document.getElementById(inputId);
+        input.files = e.dataTransfer.files;
+        updateFileName(inputId);
+    }
+
+    document.getElementById('floorplan-drop').addEventListener('dragover', handleDragOver);
+    document.getElementById('floorplan-drop').addEventListener('dragleave', handleDragLeave);
+    document.getElementById('floorplan-drop').addEventListener('drop', function(e) {
+        handleDrop(e, 'file');
+    });
+</script>
+
+{% endblock %}
+
+

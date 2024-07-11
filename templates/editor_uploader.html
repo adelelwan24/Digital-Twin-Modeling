@@ -1,0 +1,94 @@
+{% extends "base.html" %}
+
+{% block title %}Editor{% endblock %}
+
+{% block content %}
+<link href="css\upload.css" rel="stylesheet">
+
+<h2 class="mt-5 text-center">Upload Objects</h2>
+
+<div class="d-flex justify-content-center mt-4">
+    <form action="/editor" method="post" enctype="multipart/form-data" class="form-container" id="uploadForm">
+        <div class="row">
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label for="floorplan" class="text-dark">Upload Floorplan Object (GLB or GLTF)</label>
+                    <div class="drag-drop" id="floorplan-drop">
+                        Drag & Drop Floorplan Here
+                        <div class="custom-file">
+                            <input type="file" class="custom-file-input" id="floorplan" name="floorplan" 
+                                accept=".glb,.gltf" onchange="updateFileName('floorplan')">
+                            <label class="custom-file-label" for="floorplan">Choose file</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label for="object" class="text-dark">Upload Other Object (GLB or GLTF)</label>
+                    <div class="drag-drop" id="object-drop">
+                        Drag & Drop Object Here
+                        <div class="custom-file">
+                            <input type="file" class="custom-file-input" id="object" name="object" 
+                                accept=".glb,.gltf" onchange="updateFileName('object')">
+                            <label class="custom-file-label" for="object">Choose file</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <button type="submit" class="btn btn-primary btn-block mt-4">Upload Files</button>
+    </form>
+</div>
+
+<script>
+    function updateFileName(inputId) {
+        var input = document.getElementById(inputId);
+        var label = input.nextElementSibling;
+        if (input.files.length > 0) {
+            var fileName = input.files[0].name;
+            label.textContent = fileName;
+        }
+    }
+
+    window.onload = function() {
+        updateFileName('floorplan');
+        updateFileName('object');
+    };
+
+    function handleDragOver(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        e.target.classList.add('dragover');
+    }
+
+    function handleDragLeave(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        e.target.classList.remove('dragover');
+    }
+
+    function handleDrop(e, inputId) {
+        e.preventDefault();
+        e.stopPropagation();
+        e.target.classList.remove('dragover');
+
+        var input = document.getElementById(inputId);
+        input.files = e.dataTransfer.files;
+        updateFileName(inputId);
+    }
+
+    document.getElementById('floorplan-drop').addEventListener('dragover', handleDragOver);
+    document.getElementById('floorplan-drop').addEventListener('dragleave', handleDragLeave);
+    document.getElementById('floorplan-drop').addEventListener('drop', function(e) {
+        handleDrop(e, 'floorplan');
+    });
+
+    document.getElementById('object-drop').addEventListener('dragover', handleDragOver);
+    document.getElementById('object-drop').addEventListener('dragleave', handleDragLeave);
+    document.getElementById('object-drop').addEventListener('drop', function(e) {
+        handleDrop(e, 'object');
+    });
+</script>
+
+{% endblock %}

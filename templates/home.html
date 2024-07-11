@@ -1,0 +1,114 @@
+{% extends "base.html" %}
+
+{% block title %}Home{% endblock %}
+
+{% block content %}
+<link href="css\home.css" rel="stylesheet">
+
+<div class="jumbotron text-center">
+    <h1 class="display-4">Welcome to 3D Architect</h1>
+    <p class="lead">This project allows you to create, upload, view, and interact with 3D models. You can also view available models and visualize them in a 3D space.</p>
+    <hr class="my-4">
+    <p>Use the navigation bar to explore different sections of the project.</p>
+</div>
+
+<div class="example-section">
+    <h2 class="text-center">Example</h2>
+    <div class="example row">
+        <div class="col-md-5">
+            <h3 class="text-center">Original Image</h3>
+            <img src="{{ url_for('static', filename='images/example2.png') }}" alt="Example Image" class="img-fluid">
+        </div>
+        <div class="col-md-7">
+            <h3 class="text-center">3D Object</h3>
+            <div class="model-viewer"></div>
+        </div>
+    </div>
+</div>
+<script type="importmap">
+    {
+      "imports": {
+        "three": "https://cdn.jsdelivr.net/npm/three@v0.166.1/build/three.module.js",
+        "three/addons/": "https://cdn.jsdelivr.net/npm/three@v0.166.1/examples/jsm/"
+      }
+    }
+</script>
+<script type="module">
+    import * as THREE from 'three';
+    import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+    import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+
+    let camera, scene, renderer, gridHelper, light, model;
+
+    function init() {
+        const container = document.querySelector('.model-viewer');
+        const width = container.clientWidth;
+        const height = container.clientHeight;
+
+        camera = new THREE.PerspectiveCamera( 65, width / height, 0.25, 1000 );
+        camera.position.set( 7.65, 8.94, -0.24 );
+
+        scene = new THREE.Scene();
+        scene.background = new THREE.Color( 0xf0f0f0 );
+
+        light = new THREE.AmbientLight( 0xffffff );
+        scene.add(light);
+
+        const shadow = new THREE.DirectionalLight(0xffffff, .5)
+        shadow.castShadow = true;
+        shadow.position.set(-30, 50, 0);
+        scene.add(shadow);
+
+        gridHelper = new THREE.GridHelper( 50, 50 );
+        scene.add( gridHelper );
+
+        const loader = new GLTFLoader();
+        loader.load("{{ url_for('static', filename='/models/floorplans/example2.glb') }}", function(gltf) {
+            model = gltf.scene;
+            model.castShadow = true;
+            scene.add( model );
+            render();
+        },
+        function ( xhr ) {
+            console.log( Math.round( xhr.loaded / xhr.total * 100 ) + '% loaded' );
+        },
+        function ( error ) {
+            console.log( 'An error happened' );
+            console.log( error);
+        });
+
+        renderer = new THREE.WebGLRenderer( { antialias: true } );
+        renderer.setPixelRatio( window.devicePixelRatio );
+        renderer.setSize( width, height );
+        container.appendChild( renderer.domElement );
+
+        renderer.setAnimationLoop(render);
+
+        const controls = new OrbitControls( camera, renderer.domElement );
+        controls.addEventListener( 'change', render );
+        controls.minDistance = 2;
+        controls.maxDistance = 100;
+        controls.update();
+
+        window.addEventListener( 'resize', onWindowResize );
+    }
+
+    function onWindowResize() {
+        const container = document.querySelector('.model-viewer');
+        const width = container.clientWidth;
+        const height = container.clientHeight;
+        
+        camera.aspect = width / height;
+        camera.updateProjectionMatrix();
+        renderer.setSize( width, height );
+        render();
+    }
+
+    function render() {
+        console.log(camera.position);
+        renderer.render( scene, camera );
+    }
+
+    init();
+</script>
+{% endblock %}

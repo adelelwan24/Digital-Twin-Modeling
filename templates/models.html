@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+
+{% block title %}Available Models{% endblock %}
+
+{% block content %}
+<link href="css\models.css" rel="stylesheet">
+
+<h1 class="my-4 text-center">Available Models</h1>
+
+<div class="row content">
+    <div class="col-md-6 model-section">
+        <h2>Floorplans</h2>
+        <ul class="model-list">
+            {% for floorplan in floorplans %}
+                <li><a href="{{ url_for('viewer', obj_type='floorplans', model_name=floorplan) }}">{{ floorplan }}</a></li>
+            {% endfor %}
+        </ul>
+    </div>
+    <div class="col-md-6 model-section">
+        <h2>Objects</h2>
+        <ul class="model-list">
+            {% for obj in objects %}
+                <li><a href="{{ url_for('viewer', obj_type='objects', model_name=obj) }}">{{ obj }}</a></li>
+            {% endfor %}
+        </ul>
+    </div>
+</div>
+{% endblock %}
+

@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<title>Editor - 3DArchitect</title>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+		<link type="text/css" rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
+	</head>
+	<body>
+
+		<div id="info">
+			<a href="/floorplan" target="_blank" rel="noopener">Floorplan</a> - 
+			<a href="/editor" target="_blank" rel="noopener">Editor</a> - 
+			<a href="/" target="_blank" rel="noopener">Home</a> - 
+			<a href="/models" target="_blank" rel="noopener">Models</a> <br />
+			<p>
+				Use "M" to toggle between rotate and translate mode.<br />
+			</p>
+		</div>
+
+        <script type="importmap">
+            {
+              "imports": {
+                "three": "https://cdn.jsdelivr.net/npm/three@v0.166.1/build/three.module.js",
+                "three/addons/": "https://cdn.jsdelivr.net/npm/three@v0.166.1/examples/jsm/"
+              }
+            }
+          </script>
+
+		<script type="module">
+
+			import * as THREE from 'three';
+
+			import { DragControls } from 'three/addons/controls/DragControls.js';
+			import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+			import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+			import { GUI } from 'three/addons/libs/lil-gui.module.min.js';
+
+			import {exportGLTF} from '/js/exporter.js'
+			import {loadGLTFObject} from '/js/importer.js'
+
+			let container;
+			let camera, scene, renderer, amplight, gridHelper;
+			let dragControls, orbitControls;
+			let model, floorplan, group;
+
+			let groups = [];
+
+			const params = {
+                grids : true,
+                lColor : 0xffffff,
+                bColor : 0x4f5f63,
+                // bColor : 0xc3c1c1,
+                fScale : 1,
+				oScale : 2,
+				Reset : function() { 
+					model.position.set(0, 0, 0)
+					model.rotation.set(0, 0, 0)
+					floorplan.position.set(0, 0, 0)
+					floorplan.rotation.set(0, 0, 0)
+					camera.position.set( - 10, 6.8, 0 )
+				},
+				trs: false,
+				onlyVisible: true,
+				binary: false,
+				maxTextureSize: 4096,
+				title : 'scene',
+				Export : exportScene,
+				ExportModels : exportObjects,
+				ExportFloorplan : exportFloorplan,
+				ExportObject : exportObject,
+				Import: importObject,
+				obj_name : 'object name'
+            }
+
+			const mouse = new THREE.Vector2(), raycaster = new THREE.Raycaster();
+
+			init();
+
+			function init() {
+
+				container = document.createElement( 'div' );
+				document.body.appendChild( container );
+
+				scene = new THREE.Scene();
+				scene.background = new THREE.Color( 0xf0f0f0 );
+
+				amplight = new THREE.AmbientLight( 0xaaaaaa );
+				scene.add(amplight); 
+				
+				camera = new THREE.PerspectiveCamera( 70, window.innerWidth / window.innerHeight, 0.1, 500 );
+				camera.position.set( - 10, 6.8, 0 )
+
+				gridHelper = new THREE.GridHelper( 50, 50,) // 0x0000ff, 0x808080 );
+				scene.add( gridHelper );
+
+
+				const light = new THREE.SpotLight( 0xffffff, 10000 );
+				light.position.set( 0, 25, 50 );
+				light.angle = Math.PI / 9;
+
+				light.castShadow = true;
+				light.shadow.camera.near = 10;
+				light.shadow.camera.far = 100;
+				light.shadow.mapSize.width = 1024;
+				light.shadow.mapSize.height = 1024;
+
+				scene.add( light );
+
+				const loader = new GLTFLoader();
+
+				{% if floorplan %}
+					loader.load( '/models/floorplans/{{ floorplan }}',  function ( gltf ) {
+							floorplan = gltf.scene;
+							floorplan.name = 'floorplan'
+							console.log(floorplan)
+							floorplan.castShadow = true;
+							floorplan.receiveShadow = true;
+							scene.add( floorplan );
+							groups.push(floorplan)
+							render();
+				
+						},
+						// called while loading is progressing
+						function ( xhr ) {
+							console.log( Math.round( xhr.loaded / xhr.total * 100 ) + '% loaded' );
+						});
+
+				{% endif %}
+
+				{% if obj %}
+						loader.load( '/models/objects/{{ obj }}',  function ( gltf ) {
+						model = gltf.scene;
+						model.name = 'object'
+						model.castShadow = true;
+						model.receiveShadow = true;
+						scene.add( model );
+						groups.push(model)
+						render();
+					},
+					// called while loading is progressing
+					function ( xhr ) {
+						console.log( Math.round( xhr.loaded / xhr.total * 100 ) + '% loaded' );
+					});
+				{% endif %}
+
+				renderer = new THREE.WebGLRenderer( { antialias: true } );
+				renderer.setPixelRatio( window.devicePixelRatio );
+				renderer.setSize( window.innerWidth, window.innerHeight );
+				renderer.shadowMap.enabled = true;
+				renderer.shadowMap.type = THREE.PCFShadowMap;
+				renderer.setAnimationLoop(render)
+
+
+				container.appendChild( renderer.domElement );
+
+				dragControls = new DragControls( [ ... groups ], camera, renderer.domElement );
+				dragControls.rotateSpeed = 2;
+				dragControls.transformGroup = true;
+				dragControls.addEventListener( 'drag', render );
+
+				orbitControls = new OrbitControls(camera, renderer.domElement);
+				// orbitControls.enableRotate = false;
+				orbitControls.keys = {
+								LEFT: 'ArrowLeft', //left arrow
+								UP: 'ArrowUp', // up arrow
+								RIGHT: 'ArrowRight', // right arrow
+								BOTTOM: 'ArrowDown' // down arrow
+							}
+				// orbitControls.enabled = false;
+
+				dragControls.addEventListener('hoveron', disableOrbit)
+				dragControls.addEventListener('hoveroff', enableOrbit)
+				dragControls.addEventListener('drag', function (event) {
+					event.object.position.y = 0
+				})
+				dragControls.addEventListener('dragstart', disableOrbit)
+				dragControls.addEventListener('dragend', enableOrbit)
+
+				window.addEventListener( 'resize', onWindowResize );
+
+				document.addEventListener( 'click', onClick );
+				window.addEventListener( 'keydown', onKeyDown );
+				// window.addEventListener( 'keyup', onKeyUp );
+
+				render();
+
+
+				// #### GUI Section ####
+				const gui = new GUI();
+
+				const gScene = gui.addFolder('Visuals')
+				gScene.add( params, 'grids' ).name( 'Use Grid Helper' )
+				gScene.addColor( params, 'lColor' ).name( 'Light Color' )
+				gScene.addColor( params, 'bColor' ).name( 'Background Color' )
+
+				let t = gui.addFolder('Transformations')				
+				t.add( params, 'fScale', .5, 3, .01).name( "Floorplan Scale")
+				t.add( params, 'oScale', .5, 7, .01).name( "Object Scale")
+				t.add( params, 'Reset')
+				t.close()
+				
+				let h = gui.addFolder( 'Export Settings' );
+				h.add( params, 'trs' ).name( 'Use TRS' );
+				h.add( params, 'onlyVisible' ).name( 'Only Visible Objects' );
+				h.add( params, 'binary' ).name( 'Binary (GLB)' );
+				h.add( params, 'maxTextureSize', 2, 8192 ).name( 'Max Texture Size' ).step( 1 );
+				h.add( params, 'title' ).name( 'Title');
+				h.close()
+
+				let e = gui.addFolder( 'Export' );
+				e.add( params, 'Export').name('Export Scene')
+				e.add( params, 'ExportModels' ).name( 'Export Models' );
+				e.add( params, 'ExportFloorplan' ).name( 'Export Floorplan' );
+				e.add( params, 'ExportObject' ).name( 'Export Object' );
+				e.close()
+
+				const i = gui.addFolder( "Import")
+				i.add(params, 'obj_name').name("Object Name")
+				gui.add(params, 'Import')
+
+				// gui.close();
+			}
+			// ################################ <=========> #############################
+			function importObject() {
+				loadGLTFObject('/models/objects/' + params.obj_name)
+					.then((gltfObject) => {
+						console.log('GLTF Object loaded:', gltfObject);
+						scene.add(gltfObject)
+						groups.push(gltfObject)
+						gltfObject.scale.setScalar(2);
+						gltfObject.castShadow = true;
+						gltfObject.receiveShadow = true;
+
+						// Add the object to your scene here
+					})
+					.catch((error) => {
+						alert("The object '" +params.obj_name + "' doesn't exist. Please look for the available model in the models page and objects section.");
+						console.error('Error loading GLTF Object:', error);
+
+					});
+			}
+			function exportScene() {
+				exportGLTF( scene , params);
+			}
+			function exportObjects() {
+				exportGLTF( [floorplan, model], params );
+			}
+			function exportFloorplan() {
+				exportGLTF( floorplan , params);
+			}
+			function exportObject() {
+				exportGLTF( model , params);
+			}
+
+			function enableOrbit() {
+				orbitControls.enabled = true;
+			}
+
+			function disableOrbit() {
+				orbitControls.enabled = false;
+			}
+
+			function onWindowResize() {
+				camera.aspect = window.innerWidth / window.innerHeight;
+				camera.updateProjectionMatrix();
+				renderer.setSize( window.innerWidth, window.innerHeight );
+				render();
+			}
+
+			function onKeyDown( event ) {				
+				if ( event.keyCode === 77 ) {
+					dragControls.mode = ( dragControls.mode === 'translate' ) ? 'rotate' : 'translate';
+				}
+			}
+
+			// function onKeyUp() {
+				// enableSelection = false;
+			// }
+
+			function onClick( event ) {
+				// event.preventDefault();
+				const draggableObjects = dragControls.getObjects();
+
+				draggableObjects.length = 0;
+
+				mouse.x = ( event.clientX / window.innerWidth ) * 2 - 1;
+				mouse.y = - ( event.clientY / window.innerHeight ) * 2 + 1;
+
+				raycaster.setFromCamera( mouse, camera );
+
+				const intersections = raycaster.intersectObjects( groups, true );
+				
+				if ( intersections.length > 0 ) {
+					const object = intersections[ 0 ].object;
+
+					for ( let i =0; i < groups.length; i++)	{
+						group = groups[i]
+						// console.log('The group')
+						// console.log(group)
+						// dragControls.transformGroup = true;
+						draggableObjects.push( group );
+					}
+				}
+				render();
+			}
+
+			function render() {
+				gridHelper.traverse ( function (child) {
+                        child.visible = params.grids;
+                    })
+                scene.background = new THREE.Color( params.bColor)
+                amplight.color = new THREE.Color(params.lColor)
+                if (model) {
+                    model.scale.setScalar(params.oScale)
+                }
+                if (floorplan) {
+                    floorplan.scale.setScalar(params.fScale)
+                }
+				renderer.render( scene, camera );
+				orbitControls.update()
+				// console.log(camera.position)
+			}
+		</script>
+
+	</body>
+</html>
