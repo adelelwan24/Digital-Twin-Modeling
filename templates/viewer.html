@@ -4,14 +4,45 @@
 		<title>GLTF Viewer - 3DArchitect</title>
 		<meta charset="utf-8">
 		<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
-		<link type="text/css" rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
-	</head>
+		
+		<link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+		<link href="{{ url_for('static', filename='css/scene.css') }}" rel="stylesheet">
+		<link href="{{ url_for('static', filename='css/upload.css') }}" rel="stylesheet">
 
+
+		<script src="{{ url_for('static', filename='js/upload.js') }}"></script>
+		
+		<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+		<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+		<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+	</head>
+	<style>
+		.fixed{
+			position:absolute;
+			top:10px;
+			margin: 30px 20%;
+			padding: 10px 20px 10px 80px;
+			width :60%;
+		}
+	</style>
 	<body>
+
+		{% for category, message in get_flashed_messages(with_categories=true) %}
+			<div class="fixed alert alert-{{category}} custom-alert" id="customAlert" role="alert">
+				<button type="button" class="close" data-dismiss="alert">&times;</button>
+				{{ message }}
+			</div>
+			<script>
+				window.onload= showCustomAlert()
+			</script>
+        {% endfor %}
+
+
 		<div id="info">
 			<a href="/floorplan" target="_blank" rel="noopener">Floorplan</a> - 
-			<a href="/editor" target="_blank" rel="noopener">Editor</a> - 
+			<a href="/object" target="_blank" rel="noopener">Object</a> - 
 			<a href="/" target="_blank" rel="noopener">Home</a> - 
+			<a href="/editor" target="_blank" rel="noopener">Editor</a> - 
 			<a href="/models" target="_blank" rel="noopener">Models</a>
             <br />
 		</div>
