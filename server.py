@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, jsonify, url_for
+from flask import Flask, render_template, request, redirect, flash, url_for
 import os
 from werkzeug.utils import secure_filename
 from floorplan import FloorplanToBlenderRunner 
@@ -9,6 +9,7 @@ UPLOAD_FOLDER = 'static/uploads/'
 FLOORPLANS_FOLDER = 'floorplans'
 OBJECTS_FOLDER = 'objects'
 
+app.secret_key = 'So Secret'
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 ALLOWED_IMG_EXTENSIONS = {'png', 'jpg', 'jpeg'}
 ALLOWED_OBJ_EXTENSIONS = {'glb', 'gltf'}
@@ -24,7 +25,7 @@ def home():
     return render_template('home.html')
 
 @app.route('/floorplan', methods=['GET', 'POST'])
-def upload_file():
+def upload_floorplan_img():
     if request.method == 'POST':
         file = request.files.get('file')
 
@@ -37,17 +38,47 @@ def upload_file():
             name = filename.split('.')[0]
             if os.path.exists(f"static/models/{FLOORPLANS_FOLDER}/{name}.glb"):
                 model_name = f"{name}.glb"
+                flash(f"Already Created {model_name}!!", 'success')   
                 return redirect(url_for('viewer', obj_type=FLOORPLANS_FOLDER, model_name=model_name))
-                
+
             floor_path = FloorplanToBlenderRunner(image_path, name)
+
             model_name = os.path.split(floor_path)[-1]
-            print(f'Floor Path: {floor_path} | File Name: {model_name}')
+            flash(f"Finished Creating {model_name}", 'success')   
 
             return redirect(url_for('viewer', obj_type=FLOORPLANS_FOLDER, model_name=model_name))
 
         else:
             return redirect(request.url)
-    return render_template('upload.html')
+    return render_template('floorplan.html')
+
+@app.route('/object', methods=['GET', 'POST'])
+def upload_obj_img():
+    if request.method == 'POST':
+        file = request.files.get('file')
+
+        #### Validate File Constrains
+        if file and file.filename and allowed_file(file.filename, ALLOWED_IMG_EXTENSIONS):
+            filename = secure_filename(file.filename)
+            image_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+            file.save(image_path)
+            
+            name = filename.split('.')[0]
+            if os.path.exists(f"static/models/{OBJECTS_FOLDER}/{name}.glb"):
+                model_name = f"{name}.glb"
+                flash(f"Already Created {model_name}!!", 'success')
+                return redirect(url_for('viewer', obj_type=OBJECTS_FOLDER, model_name=model_name))
+            
+            #### TODO: Call the InstantMesh generation function
+            
+            model_name = 'dolphin.obj'
+            flash(f"Finished Creating {model_name}", 'success')
+
+            return redirect(url_for('viewer', obj_type=OBJECTS_FOLDER, model_name=model_name))
+
+        else:
+            return redirect(request.url)
+    return render_template('object.html')
 
 
 @app.route('/editor', methods=['GET', 'POST'])
@@ -72,7 +103,6 @@ def editor():
         
         if not (obj or floorplan):
             return render_template('editor_uploader.html')
-            return redirect(url_for('editor'))
         
         return redirect(url_for('editor', floorplan=floor_filename, obj=obj_filename)) 
     else:

@@ -45,3 +45,13 @@
     color: #fff;
 }
 
+.custom-alert {
+    display: none;
+    padding-left: 25px;
+    padding-right: 25px;
+    border-radius: 5px;
+    z-index: 1000;
+}
+.custom-alert.show {
+    display: block;
+}

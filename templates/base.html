@@ -25,6 +25,9 @@
                     <a class="nav-link" href="/floorplan">Floorplan</a>
                 </li>
                 <li class="nav-item">
+                    <a class="nav-link" href="/object">Object</a>
+                </li>
+                <li class="nav-item">
                     <a class="nav-link" href="/editor">Editor</a>
                 </li>
                 <li class="nav-item">
@@ -34,8 +37,18 @@
         </div>
     </nav>
 
+</head>
+<body>
     <!-- Content -->
     <div class="container">
+
+        {% for category, message in get_flashed_messages(with_categories=true) %}
+        <div class="alert alert-{{category}}">
+            <button type="button" class="close" data-dismiss="alert">&times;</button>
+            {{ message }}
+        </div>
+        {% endfor %}
+
         {% block content %}
         {% endblock %}
     </div>
