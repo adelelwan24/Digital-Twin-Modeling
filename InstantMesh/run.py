@@ -141,9 +141,10 @@ if IS_FLEXICUBES:
 model = model.eval()
 
 # make output directories
-image_path = os.path.join(args.output_path, config_name, 'images')
-mesh_path = os.path.join(args.output_path, config_name, 'meshes')
-video_path = os.path.join(args.output_path, config_name, 'videos')
+#### FIXED: Make the model outputs be in the same location.
+image_path = args.output_path
+mesh_path = args.output_path
+video_path = args.output_path
 os.makedirs(image_path, exist_ok=True)
 os.makedirs(mesh_path, exist_ok=True)
 os.makedirs(video_path, exist_ok=True)
@@ -240,7 +241,8 @@ for idx, sample in enumerate(outputs):
         else:
             vertices, faces, vertex_colors = mesh_out
             # save_obj(vertices, faces, vertex_colors, mesh_path_idx)
-            ###
+            
+            #### FIXED: Changed the output model format to GLB for compatability with the front-end
             save_glb(vertices, faces, vertex_colors, mesh_path_idx_glb)
 
         print(f"Mesh saved to {mesh_path_idx}")
