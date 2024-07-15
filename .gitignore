@@ -5,7 +5,7 @@ uploads/
 target/
 resources
 data/
-configs/
+configs/*.ini
 flagged
 static/uploads
 static/models/*/*.blend
