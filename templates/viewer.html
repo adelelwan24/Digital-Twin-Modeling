@@ -104,7 +104,7 @@
                 light = new THREE.AmbientLight( 0xffffff );
                 scene.add(light) 
 
-                const shadow = new THREE.DirectionalLight(0xffffff, .5)
+                const shadow = new THREE.DirectionalLight(0xffffff, 4)
                 shadow.castShadow = true;
                 shadow.position.set(-30, 50, 0)
                 scene.add(shadow)
@@ -135,15 +135,12 @@
 
                 // ##################### GLTFLoader #############################
 				const loader = new GLTFLoader();
-                // loader.load( '/models/floorplan/final_object.glb', function ( gltf ) {
                 loader.load( '/models/{{ obj_type }}/{{ model_name }}',  function ( gltf ) {
-                // loader.load( 'floorplan.glb', async function ( gltf ) {
                     model = gltf.scene;
-                    // await renderer.compileAsync( model, camera, scene );
+
                     model.castShadow = true;
                     scene.add( model );
                     render();
-        
                 },
                 // called while loading is progressing
                 function ( xhr ) {

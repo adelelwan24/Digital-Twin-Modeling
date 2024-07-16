@@ -96,6 +96,13 @@
 				scene.add( gridHelper );
 
 
+
+				const shadow = new THREE.DirectionalLight(0xffffff, 2)
+                shadow.castShadow = true;
+                shadow.position.set(-30, 50, 0)
+                scene.add(shadow)
+
+
 				const light = new THREE.SpotLight( 0xffffff, 10000 );
 				light.position.set( 0, 25, 50 );
 				light.angle = Math.PI / 9;
