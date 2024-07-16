@@ -55,10 +55,15 @@
                 fScale : 1,
 				oScale : 2,
 				Reset : function() { 
-					model.position.set(0, 0, 0)
-					model.rotation.set(0, 0, 0)
-					floorplan.position.set(0, 0, 0)
-					floorplan.rotation.set(0, 0, 0)
+					for (let i = 0; i < groups.length; i++) {
+						groups[i].position.set(0, 0, 0)
+						if (groups[i].name == 'floorplan'){
+							groups[i].rotation.set(0, 0, 0)
+						}
+						else {
+							groups[i].rotation.set(Math.PI / 2, 0, 0)
+						}
+					}
 					camera.position.set( - 10, 6.8, 0 )
 				},
 				trs: false,
