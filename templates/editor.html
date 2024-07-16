@@ -181,7 +181,9 @@
 				dragControls.addEventListener('hoveron', disableOrbit)
 				dragControls.addEventListener('hoveroff', enableOrbit)
 				dragControls.addEventListener('drag', function (event) {
-					event.object.position.y = 0
+					if (event.object.name == 'floorplan') {
+						event.object.position.y = 0
+					}
 				})
 				dragControls.addEventListener('dragstart', disableOrbit)
 				dragControls.addEventListener('dragend', enableOrbit)
