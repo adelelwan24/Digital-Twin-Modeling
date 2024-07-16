@@ -140,6 +140,7 @@
 						loader.load( '/models/objects/{{ obj }}',  function ( gltf ) {
 						model = gltf.scene;
 						model.name = 'object'
+						model.rotation.set(Math.PI / 2, 0, 0)
 						model.castShadow = true;
 						model.receiveShadow = true;
 						scene.add( model );
@@ -236,6 +237,7 @@
 						console.log('GLTF Object loaded:', gltfObject);
 						scene.add(gltfObject)
 						groups.push(gltfObject)
+						gltfObject.rotation.set(Math.PI / 2, 0, 0)
 						gltfObject.scale.setScalar(2);
 						gltfObject.castShadow = true;
 						gltfObject.receiveShadow = true;
@@ -252,7 +254,7 @@
 				exportGLTF( scene , params);
 			}
 			function exportObjects() {
-				exportGLTF( [floorplan, model], params );
+				exportGLTF( groups, params );
 			}
 			function exportFloorplan() {
 				exportGLTF( floorplan , params);

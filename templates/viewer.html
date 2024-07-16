@@ -137,7 +137,9 @@
 				const loader = new GLTFLoader();
                 loader.load( '/models/{{ obj_type }}/{{ model_name }}',  function ( gltf ) {
                     model = gltf.scene;
-
+					{% if obj_type == 'objects' %}
+						model.rotation.set(Math.PI / 2, 0, 0)
+					{% endif %}
                     model.castShadow = true;
                     scene.add( model );
                     render();
