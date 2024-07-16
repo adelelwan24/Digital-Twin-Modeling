@@ -44,6 +44,8 @@
 			let camera, scene, renderer, amplight, gridHelper;
 			let dragControls, orbitControls;
 			let model, floorplan, group;
+			let count = 1;
+			let curOBJ;
 
 			let groups = [];
 
@@ -54,6 +56,14 @@
                 // bColor : 0xc3c1c1,
                 fScale : 1,
 				oScale : 2,
+				scaleRate : 2,
+				scale : function() {
+					curOBJ.scale.setScalar(params.scaleRate)
+				},
+				delete : function() {
+					scene.remove(curOBJ)
+					groups = groups.filter(item => item !== curOBJ);
+				},
 				Reset : function() { 
 					for (let i = 0; i < groups.length; i++) {
 						groups[i].position.set(0, 0, 0)
@@ -144,7 +154,7 @@
 				{% if obj %}
 						loader.load( '/models/objects/{{ obj }}',  function ( gltf ) {
 						model = gltf.scene;
-						model.name = 'object'
+						model.name = 'model'
 						model.rotation.set(Math.PI / 2, 0, 0)
 						model.castShadow = true;
 						model.receiveShadow = true;
@@ -213,6 +223,9 @@
 				let t = gui.addFolder('Transformations')				
 				t.add( params, 'fScale', .5, 3, .01).name( "Floorplan Scale")
 				t.add( params, 'oScale', .5, 7, .01).name( "Object Scale")
+				t.add( params, 'scaleRate', .5, 7, .01).name( "Scale Factor")
+				t.add( params, 'scale').name( "Scale Selected Object")
+				t.add( params, 'delete').name( "Del Selected Object")
 				t.add( params, 'Reset')
 				t.close()
 				
@@ -241,15 +254,15 @@
 			function importObject() {
 				loadGLTFObject('/models/objects/' + params.obj_name)
 					.then((gltfObject) => {
-						console.log('GLTF Object loaded:', gltfObject);
+						gltfObject.name = 'object' + count
+						count = count + 1;
+						console.log('GLTF Object loaded:', gltfObject.name);
 						scene.add(gltfObject)
 						groups.push(gltfObject)
 						gltfObject.rotation.set(Math.PI / 2, 0, 0)
-						gltfObject.scale.setScalar(2);
+						// gltfObject.scale.setScalar(2);
 						gltfObject.castShadow = true;
 						gltfObject.receiveShadow = true;
-
-						// Add the object to your scene here
 					})
 					.catch((error) => {
 						alert("The object '" +params.obj_name + "' doesn't exist. Please look for the available model in the models page and objects section.");
@@ -313,9 +326,11 @@
 
 					for ( let i =0; i < groups.length; i++)	{
 						group = groups[i]
-						// console.log('The group')
-						// console.log(group)
-						// dragControls.transformGroup = true;
+						group.traverse (function(child) {
+							if (child == object) 
+								curOBJ = group;
+						})
+
 						draggableObjects.push( group );
 					}
 				}
