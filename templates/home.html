@@ -17,7 +17,7 @@
     <div class="example row">
         <div class="col-md-5">
             <h3 class="text-center">Original Image</h3>
-            <img src="{{ url_for('static', filename='images/example2.png') }}" alt="Example Image" class="img-fluid">
+            <img src="{{ url_for('static', filename='images/example3.png') }}" alt="Example Image" class="img-fluid">
         </div>
         <div class="col-md-7">
             <h3 class="text-center">3D Object</h3>
@@ -63,7 +63,7 @@
         scene.add( gridHelper );
 
         const loader = new GLTFLoader();
-        loader.load("{{ url_for('static', filename='/models/floorplans/example2.glb') }}", function(gltf) {
+        loader.load("{{ url_for('static', filename='/models/floorplans/example3.glb') }}", function(gltf) {
             model = gltf.scene;
             model.castShadow = true;
             scene.add( model );
