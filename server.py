@@ -1,7 +1,10 @@
 from flask import Flask, render_template, request, redirect, flash, url_for
 import os
 from werkzeug.utils import secure_filename
+
 from floorplan import FloorplanToBlenderRunner 
+from object import run_instant_nerf
+
 
 app = Flask(__name__, static_url_path='')
 
@@ -62,6 +65,7 @@ def upload_obj_img():
             filename = secure_filename(file.filename)
             image_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
             file.save(image_path)
+            print(image_path)
             
             name = filename.split('.')[0]
             if os.path.exists(f"static/models/{OBJECTS_FOLDER}/{name}.glb"):
@@ -70,8 +74,8 @@ def upload_obj_img():
                 return redirect(url_for('viewer', obj_type=OBJECTS_FOLDER, model_name=model_name))
             
             #### TODO: Call the InstantMesh generation function
-            
-            model_name = 'dolphin.obj'
+            run_instant_nerf(image_path)
+            model_name = f"{name}.glb"
             flash(f"Finished Creating {model_name}", 'success')
 
             return redirect(url_for('viewer', obj_type=OBJECTS_FOLDER, model_name=model_name))
