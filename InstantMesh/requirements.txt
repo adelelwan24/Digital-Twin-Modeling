@@ -1,6 +1,4 @@
 pytorch-lightning==2.1.2
-gradio==3.41.2
-huggingface-hub
 einops
 omegaconf
 torchmetrics
@@ -10,10 +8,14 @@ tensorboard
 PyMCubes
 trimesh
 rembg
-transformers==4.34.1
+transformers
 diffusers==0.20.2
+torchvision
 bitsandbytes
 imageio[ffmpeg]
 xatlas
 plyfile
-git+https://github.com/NVlabs/nvdiffrast/
+git+https://github.com/NVlabs/nvdiffrast
+jax==0.4.19
+jaxlib==0.4.19
+ninja
